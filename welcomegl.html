@@ -1,43 +1,15 @@
+<!DOCTYPE html>
+
 <html>
-	<head>
-		<title>WebGL - Simple triangle</title>
-	</head>
-	<body onload="InitDemo();">
-		<canvas id="game-surface" width="800" height="600">
-			Your browser does not support HTML5
-		</canvas>
-		<br />
-		<i>Demo is above this text</i>
-		<script src="app.js"></script>
-	</body>
-  <!-- vertex shader -->
-  <script  id="vertex-shader-2d" type="notjs">
-    // an attribute will receive data from a buffer
-  attribute vec4 a_position;
-  attribute vec3 vertColor;
-  varying vec3 fragColor;
 
+  <head>
+    <meta charset='utf-8'/>
+    <script type="text/javascript" src="app.js"></script>
+  </head>
+  <body style='margin:0px' onload='main()'>
+  
+    <canvas id='your_canvas'
+            style='position: absolute; background-color: red;'></canvas>
+  </body>
 
-  // all shaders have a main function
-  void main() {
-  
-    // gl_Position is a special variable a vertex shader
-    // is responsible for setting
-    fragColor = vertColor;
-    gl_Position = a_position;
-  }
-  </script>
-  <!-- fragment shader -->
-  <script  id="fragment-shader-2d" type="notjs">
-    // fragment shaders don't have a default precision so we need
-    // to pick one. mediump is a good default
-    precision mediump float;
-    varying vec3 fragColor;
-  
-    void main() {
-      // gl_FragColor is a special variable a fragment shader
-      // is responsible for setting
-      gl_FragColor = vec4(fragColor, 1); // 
-    }
-  </script>
 </html>
