@@ -7,7 +7,7 @@ var main=function() {
  /*========================= GET WEBGL CONTEXT ========================= */
  var GL;
  try {
-   GL = CANVAS.getContext("webgl");
+   GL = CANVAS.getContext("webgl", {antialias: true});
  } catch (e) {
    alert("You are not webgl compatible :(") ;
    return false;
@@ -17,8 +17,12 @@ var main=function() {
   /*jshint multistr: true */
   var shader_vertex_source="\n\
 attribute vec2 position; //the position of the point\n\
+attribute vec3 color;  //the color of the point\n\
+\n\
+varying vec3 vColor;\n\
 void main(void) { //pre-built function\n\
 gl_Position = vec4(position, 0., 1.); //0. is the z, and 1 is w\n\
+vColor=color;\n\
 }";
 
 
@@ -27,8 +31,9 @@ precision mediump float;\n\
 \n\
 \n\
 \n\
+varying vec3 vColor;\n\
 void main(void) {\n\
-gl_FragColor = vec4(0.,0.,0., 1.); //black color\n\
+gl_FragColor = vec4(vColor, 1.); //black color\n\
 }";
 
 var get_shader=function(source, type, typeString) {  //this function compiles a shader
@@ -56,8 +61,10 @@ GL.attachShader(SHADER_PROGRAM, shader_fragment);
 
 GL.linkProgram(SHADER_PROGRAM);
 
+var _color = GL.getAttribLocation(SHADER_PROGRAM, "color");
 var _position = GL.getAttribLocation(SHADER_PROGRAM, "position");
 
+GL.enableVertexAttribArray(_color);
 GL.enableVertexAttribArray(_position);
 
 GL.useProgram(SHADER_PROGRAM);
@@ -66,8 +73,11 @@ GL.useProgram(SHADER_PROGRAM);
 //POINTS :
 var triangle_vertex=[
   -1,-1, //first corner: -> bottom left of the viewport
+  0,0,1, //first color: blue
   1,-1, //bottom right of the viewport
+  1,1,0, // second color: yellow
   1,1,  //top right of the viewport
+  1,0,0 //third color: red
 ];
 
   var TRIANGLE_VERTEX= GL.createBuffer ();
@@ -94,14 +104,8 @@ var animate=function() {
 
   GL.bindBuffer(GL.ARRAY_BUFFER, TRIANGLE_VERTEX);
 
-  GL.vertexAttribPointer(
-    _position, //attribute location 
-    2, //number of elements per attribute (here 2 because vec2 attr)
-    GL.FLOAT, //type of elements
-    false, //type of elements
-     2* Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-     0  //Offset from the beginning of a single vertex to this attribute
-     );
+  GL.vertexAttribPointer(_position, 2, GL.FLOAT, false,4*(2+3),0) ;
+  GL.vertexAttribPointer(_color, 3, GL.FLOAT, false,4*(2+3),2*4);
 
   GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TRIANGLE_FACES);
   GL.drawElements(GL.TRIANGLES, 3, GL.UNSIGNED_SHORT, 0);
